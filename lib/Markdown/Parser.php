@@ -3185,7 +3185,7 @@ class _MarkdownExtra_TmpImpl extends Markdown_Parser {
         $ref_count_mark = $this->footnotes_ref_count[$node_id] += 1;
       }
 
-      $attr = "";
+      $attr = "rel=\"footnote\"";
       if ($this->fn_link_class != "") {
         $class = $this->fn_link_class;
         $class = $this->encodeAttribute($class);
