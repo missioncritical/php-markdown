@@ -1,10 +1,10 @@
 PHP Markdown
 ============
 
-PHP Markdown Lib 1.3 - 11 Apr 2013
+PHP Markdown Lib 1.5.0 - 1 Mar 2015
 
 by Michel Fortin  
-<http://michelf.ca/>
+<https://michelf.ca/>
 
 based on Markdown by John Gruber  
 <http://daringfireball.net/>
@@ -14,19 +14,21 @@ Introduction
 ------------
 
 This is a library package that includes the PHP Markdown parser and its 
-sibling PHP Markdown Extra which additional features.
+sibling PHP Markdown Extra with additional features.
 
 Markdown is a text-to-HTML conversion tool for web writers. Markdown
 allows you to write using an easy-to-read, easy-to-write plain text
 format, then convert it to structurally valid XHTML (or HTML).
 
-"Markdown" is two things: a plain text markup syntax, and a software 
-tool, written in Perl, that converts the plain text markup to HTML. 
-PHP Markdown is a port to PHP of the original Markdown program by 
-John Gruber.
+"Markdown" is actually two things: a plain text markup syntax, and a 
+software tool, originally written in Perl, that converts the plain text 
+markup to HTML. PHP Markdown is a port to PHP of the original Markdown 
+program by John Gruber.
 
-Full documentation of Markdown's syntax is available on John's 
-Markdown page: <http://daringfireball.net/projects/markdown/>
+*	[Full documentation of the Markdown syntax](<http://daringfireball.net/projects/markdown/>)  
+	— Daring Fireball (John Gruber)
+*	[Markdown Extra syntax additions](<https://michelf.ca/projects/php-markdown/extra/>)  
+	— Michel Fortin
 
 
 Requirement
@@ -47,9 +49,8 @@ Usage
 
 This library package is meant to be used with class autoloading. For autoloading 
 to work, your project needs have setup a PSR-0-compatible autoloader. See the 
-included Readme.php file for a minimal autoloader setup. (If you don't want to 
-use autoloading you can do a classic `require_once` to manually include the 
-files prior use instead.)
+included Readme.php file for a minimal autoloader setup. (If you cannot use 
+autoloading, see below.)
 
 With class autoloading in place, putting the 'Michelf' folder in your 
 include path should be enough for this to work:
@@ -82,7 +83,23 @@ configuration variables:
 
 To learn more, see the full list of [configuration variables].
 
- [configuration variables]: http://michelf.ca/projects/php-markdown/configuration/
+ [configuration variables]: https://michelf.ca/projects/php-markdown/configuration/
+
+
+### Usage without an autoloader
+
+If you cannot use class autoloading, you can still use `include` or `require` 
+to access the parser. To load the `\Michelf\Markdown` parser, do it this way:
+
+	require_once 'Michelf/Markdown.inc.php';
+
+Or, if you need the `\Michelf\MarkdownExtra` parser:
+
+	require_once 'Michelf/MarkdownExtra.inc.php';
+
+While the plain `.php` files depend on autoloading to work correctly, using the
+`.inc.php` files instead will eagerly load the dependencies that would be 
+loaded on demand if you were using autoloading.
 
 
 Public API and Versioning Policy
@@ -128,19 +145,113 @@ that the backtrack limit is not too low by running `php --info | grep pcre`.
 See Installation and Requirement above for details.
 
 
+Development and Testing
+-----------------------
+
+Pull requests for fixing bugs are welcome. Proposed new features are
+going meticulously reviewed -- taking into account backward compatibility, 
+potential side effects, and future extensibility -- before deciding on
+acceptance or rejection.
+
+If you make a pull request that includes changes to the parser please add 
+tests for what is being changed to [MDTest][] and make a pull request there 
+too.
+
+ [MDTest]: https://github.com/michelf/mdtest/
+
+
+Donations
+---------
+
+If you wish to make a donation that will help me devote more time to 
+PHP Markdown, please visit [michelf.ca/donate] or send Bitcoin to
+[1HiuX34czvVPPdhXbUAsAu7pZcesniDCGH].
+
+ [michelf.ca/donate]: https://michelf.ca/donate/#!Thanks%20for%20PHP%20Markdown
+ [1HiuX34czvVPPdhXbUAsAu7pZcesniDCGH]: bitcoin:1HiuX34czvVPPdhXbUAsAu7pZcesniDCGH
+
+
 Version History
 ---------------
 
-PHP Markdown Lib 1.3 (11 Apr 2013):
+PHP Markdown Lib 1.5.0 (1 Mar 2015)
+
+*	Added the ability start ordered lists with a number different from 1 and
+	and have that reflected in the HTML output. This can be enabled with
+	the `enhanced_ordered_lists` configuration variable for the Markdown 
+	parser; it is enabled by default for Markdown Extra.
+	Credits to Matt Gorle for providing the implementation.
+
+*	Added the ability to insert custom HTML attributes with simple values 
+	everywhere an extra attribute block is allowed (links, images, headers).
+	The value must be unquoted, cannot contains spaces and is limited to 
+	alphanumeric ASCII characters.
+	Credits to Peter Droogmans for providing the implementation.
+
+*	Added a `header_id_func` configuration variable which takes a function
+	that can generate an `id` attribute value from the header text.
+	Credits to Evert Pot for providing the implementation.
+
+*	Added a `url_filter_func` configuration variable which takes a function
+	that can rewrite any link or image URL to something different.
+
+
+PHP Markdown Lib 1.4.1 (4 May 2014)
+
+*	The HTML block parser will now treat `<figure>` as a block-level element
+	(as it should) and no longer wrap it in `<p>` or parse it's content with 
+	the as Markdown syntax (although with Extra you can use `markdown="1"`
+	if you wish to use the Markdown syntax inside it).
+
+*	The content of `<style>` elements will now be left alone, its content
+	won't be interpreted as Markdown.
+
+*	Corrected an bug where some inline links with spaces in them would not
+	work even when surounded with angle brackets:
+	
+		[link](<s p a c e s>)
+
+*	Fixed an issue where email addresses with quotes in them would not always
+	have the quotes escaped in the link attribute, causing broken links (and
+	invalid HTML).
+
+*	Fixed the case were a link definition following a footnote definition would
+	be swallowed by the footnote unless it was separated by a blank line.
+
+
+PHP Markdown Lib 1.4.0 (29 Nov 2013)
+
+*	Added support for the `tel:` URL scheme in automatic links.
+
+		<tel:+1-111-111-1111>
+	
+	It gets converted to this (note the `tel:` prefix becomes invisible):
+	
+		<a href="tel:+1-111-111-1111">+1-111-111-1111</a>
+
+*	Added backtick fenced code blocks to MarkdownExtra, originally from
+	Github-Flavored Markdown.
+
+*	Added an interface called MarkdownInterface implemented by both
+	the Markdown and MarkdownExtra parsers. You can use the interface if
+	you want to create a mockup parser object for unit testing.
+
+*	For those of you who cannot use class autoloading, you can now
+	include `Michelf/Markdown.inc.php` or `Michelf/MarkdownExtra.inc.php` (note 
+	the 	`.inc.php` extension) to automatically include other files required
+	by the parser.
+
+
+PHP Markdown Lib 1.3 (11 Apr 2013)
 
 This is the first release of PHP Markdown Lib. This package requires PHP 
-version 4.3 or later and is designed to work with PSR-0 autoloading and, 
+version 5.3 or later and is designed to work with PSR-0 autoloading and, 
 optionally with Composer. Here is a list of the changes since 
 PHP Markdown Extra 1.2.6:
 
 *	Plugin interface for WordPress and other systems is no longer present in
 	the Lib package. The classic package is still available if you need it:
-	<http://michelf.ca/projects/php-markdown/classic/>
+	<https://michelf.ca/projects/php-markdown/classic/>
 
 *	Added `public` and `protected` protection attributes, plus a section about
 	what is "public API" and what isn't in the Readme file.
@@ -178,8 +289,8 @@ Copyright and License
 ---------------------
 
 PHP Markdown Lib
-Copyright (c) 2004-2013 Michel Fortin  
-<http://michelf.ca/>  
+Copyright (c) 2004-2015 Michel Fortin
+<https://michelf.ca/>  
 All rights reserved.
 
 Based on Markdown  
