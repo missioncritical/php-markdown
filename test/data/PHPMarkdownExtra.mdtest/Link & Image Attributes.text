@@ -6,6 +6,6 @@ This is an ![inline image](/img "title"){.class #inline-img}.
 
 This is a ![reference image][imageid].
 
-[linkid]: /path/to/something (Title) { .class #linkref }
-[imageid]: /path/to/something/else (Title) { .class #imgref }
+[linkid]: /path/to/something (Title) { .class #linkref data-key=val }
+[imageid]: /path/to/something/else (Title) { .class #imgref data-key=val }
 

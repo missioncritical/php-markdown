@@ -15,8 +15,6 @@ class Markdown_ParserExtraTest extends CriticalI_TestCase {
     $expected = file_get_contents($expectedFile);
     
     $parser = new Markdown_ParserExtra();
-    $parser->fn_link_class = '';
-    $parser->fn_backlink_class = '';
     
     $result =  $parser->transform($src);
     
